@@ -1,0 +1,73 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:20.10.7
+        options: --privileged
+        ports:
+          - 2375:2375
+        env:
+          DOCKER_HOST: tcp://localhost:2375
+        options: --privileged
+        # Включить Docker daemon
+        command: ["dockerd-entrypoint.sh"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      # Построение и публикация образов
+      - name: Build and push Auth Service
+        run: |
+          docker build -t your_dockerhub_username/auth_service:latest ./services/auth
+          docker push your_dockerhub_username/auth_service:latest
+
+      - name: Build and push Router Service
+        run: |
+          docker build -t your_dockerhub_username/router_service:latest ./services/router
+          docker push your_dockerhub_username/router_service:latest
+
+      - name: Build and push Orchestrator Service
+        run: |
+          docker build -t your_dockerhub_username/orchestrator_service:latest ./services/orchestrator
+          docker push your_dockerhub_username/orchestrator_service:latest
+
+      - name: Build and push Route Checker Service
+        run: |
+          docker build -t your_dockerhub_username/route_checker_service:latest ./services/route-checker
+          docker push your_dockerhub_username/route_checker_service:latest
+
+      - name: Build and push Resource X Service
+        run: |
+          docker build -t your_dockerhub_username/resource_x_service:latest ./services/resource-x
+          docker push your_dockerhub_username/resource_x_service:latest
+
+      # Развертывание через Ansible
+      - name: Deploy to Swarm via Ansible
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /path/to/your/project
+            git pull
+            docker stack deploy -c docker/docker-stack.yml my_stack

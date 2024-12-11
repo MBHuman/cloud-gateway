@@ -1,0 +1,132 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:6.2
+    command: redis-server --requirepass your_redis_password
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+  redis-sentinel:
+    image: redis:6.2
+    command: redis-sentinel /etc/redis/sentinel.conf
+    volumes:
+      - ./redis-sentinel/sentinel.conf:/etc/redis/sentinel.conf
+    ports:
+      - "26379:26379"
+    networks:
+      - backend
+    deploy:
+      replicas: 3
+      placement:
+        constraints: [node.role == manager]
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - backend
+    deploy:
+      replicas: 1
+
+  auth:
+    build: ../services/auth
+    environment:
+      - PORT=3001
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=your_redis_password
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+      - JWT_SECRET=your_jwt_secret
+    ports:
+      - "3001:3001"
+    networks:
+      - backend
+    depends_on:
+      - redis
+      - rabbitmq
+    deploy:
+      replicas: 2
+
+  router:
+    build: ../services/router
+    environment:
+      - PORT=3002
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=your_redis_password
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+      - JWT_SECRET=your_jwt_secret
+    ports:
+      - "3002:3002"
+    networks:
+      - backend
+    depends_on:
+      - redis
+      - rabbitmq
+    deploy:
+      replicas: 2
+
+  orchestrator:
+    build: ../services/orchestrator
+    environment:
+      - PORT=3003
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=your_redis_password
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+    ports:
+      - "3003:3003"
+    networks:
+      - backend
+    depends_on:
+      - redis
+      - rabbitmq
+    deploy:
+      replicas: 1
+
+  route_checker:
+    build: ../services/route-checker
+    environment:
+      - PORT=3004
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=your_redis_password
+      - RABBITMQ_URL=amqp://user:password@rabbitmq:5672
+    ports:
+      - "3004:3004"
+    networks:
+      - backend
+    depends_on:
+      - redis
+      - rabbitmq
+    deploy:
+      replicas: 1
+
+  resource_x:
+    build: ../services/resource-x
+    environment:
+      - PORT=3005
+    ports:
+      - "3005:3005"
+    networks:
+      - backend
+    depends_on:
+      - redis
+    deploy:
+      replicas: 1
+
+networks:
+  backend:
+    driver: overlay

@@ -1,0 +1,25 @@
+{
+  "name": "cloud",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "workspaces": [
+    "services/*",
+    "ansible/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "start": "npm run start --workspaces",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces",
+    "format": "npm run format --workspaces",
+    "deploy": "ansible-playbook ansible/playbooks/deploy.yml"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "lerna": "^8.1.9",
+    "prettier": "^2.8.0"
+  },
+  "author": "Evgeny D",
+  "license": "ISC"
+}
