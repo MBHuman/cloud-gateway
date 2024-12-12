@@ -21,9 +21,27 @@ export class AuthService {
 
   async login(user: any) {
     const payload = { username: user.username, sub: user.userId };
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '60s' });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken,
+      refreshToken,
     };
+  }
+  
+  async refresh(refreshToken: string) {
+    try {
+      const payload = this.jwtService.verify(refreshToken);
+      const newPayload = { username: payload.username, sub: payload.sub };
+      const accessToken = this.jwtService.sign(newPayload, { expiresIn: '60s' });
+      const newRefreshToken = this.jwtService.sign(newPayload, { expiresIn: '7d' });
+      return {
+        accessToken,
+        refreshToken: newRefreshToken,
+      };
+    } catch (e) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
   }
 
   async getUserResources(userId: string): Promise<string[]> {
