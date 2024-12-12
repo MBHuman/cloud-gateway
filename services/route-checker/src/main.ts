@@ -4,7 +4,6 @@ import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
   // Настройка микросервиса для обработки сообщений RabbitMQ
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
@@ -15,8 +14,8 @@ async function bootstrap() {
         durable: false,
       },
     },
-  });
-
+  });  
+  console.log(`rmq url ${process.env.RABBITMQ_URL}`)
   await app.startAllMicroservices();
   await app.listen(process.env.PORT || 3004);
 }

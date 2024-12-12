@@ -1,17 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { RedisService } from 'nestjs-redis';
-import { Redis } from 'ioredis';
 
 @Injectable()
 export class AuthService {
-  private redisClient: Redis;
 
   constructor(
     private readonly jwtService: JwtService,
-    private readonly redisService: RedisService,
   ) {
-    this.redisClient = this.redisService.getClient();
   }
 
   async validateUser(token: string): Promise<any> {
@@ -29,16 +24,19 @@ export class AuthService {
   }
 
   async getUserResources(userId: string): Promise<string[]> {
-    const resources = await this.redisClient.smembers(`user:${userId}:resources`);
+    // const resources = await this.redisClient.smembers(`user:${userId}:resources`);
+    const resources = ['resource']
     return resources;
   }
 
   async addUserResource(userId: string, resource: string): Promise<void> {
-    await this.redisClient.sadd(`user:${userId}:resources`, resource);
+    console.log(`add user resource ${userId} ${resource}`)
+    // await this.redisClient.sadd(`user:${userId}:resources`, resource);
   }
 
   async removeUserResource(userId: string, resource: string): Promise<void> {
-    await this.redisClient.srem(`user:${userId}:resources`, resource);
+    console.log(`removeUserResources ${userId} ${resource}`)
+    // await this.redisClient.srem(`user:${userId}:resources`, resource);
   }
 
   async handleCheckAccess(data: { userId: string; resourceId: string }): Promise<boolean> {

@@ -16,7 +16,7 @@ async function bootstrap() {
       },
     },
   });
-
+  console.log(`rmq url ${process.env.RABBITMQ_URL}`)
   await app.startAllMicroservices();
   await app.listen(process.env.PORT || 3001);
 }

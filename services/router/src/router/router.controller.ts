@@ -21,7 +21,7 @@ export class RouterController {
         if (!isAllowed) {
             return res.status(HttpStatus.FORBIDDEN).send('Forbidden');
         }
-
+        console.log(`handleRequest, is allowed: ${isAllowed}`)
         // Получить внутренний URL ресурса
         const internalUrl = await this.routerService.getInternalUrl(resourceId);
         if (!internalUrl) {

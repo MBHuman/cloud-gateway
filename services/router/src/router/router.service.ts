@@ -1,36 +1,35 @@
-import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { RedisService } from 'nestjs-redis';
-import { Redis } from 'ioredis';
-import axios from 'axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class RouterService {
-  private redisClient: Redis;
 
   constructor(
-    @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
-    private readonly redisService: RedisService,
+    @Inject('ROUTER_CHECKER_SERVICE') private readonly authClient: ClientProxy
   ) {
-    this.redisClient = this.redisService.getClient();
   }
 
   async checkAccess(token: string, resourceId: string): Promise<boolean> {
-    try {
       // Распарсить JWT и получить userId
-      const decoded = this.parseToken(token);
-      const userId = decoded.sub;
+      // const decoded = this.parseToken(token);
+      // const userId = decoded.sub;
+      const userId = "adf"
 
+      console.log(`Checking access uid: ${userId} resourceId: ${resourceId} token: ${token}`)
       // Отправить запрос к Auth сервису для проверки доступа
-      const isAllowed = await this.authClient.send(
-        { cmd: 'check_access' },
-        { userId, resourceId },
-      ).toPromise();
+      const isAllowed = await firstValueFrom(
+        this.authClient.send(
+          { cmd: 'check_access' },
+          { userId, resourceId },
+        )
+      );
+      console.log(`is allowed ${isAllowed}`)
 
       return isAllowed;
-    } catch (error) {
-      return false;
-    }
+    // } catch (error) {
+    //   return false;
+    // }
   }
 
   parseToken(token: string): any {
@@ -42,15 +41,17 @@ export class RouterService {
   }
 
   async getInternalUrl(resourceId: string): Promise<string | null> {
-    const url = await this.redisClient.get(`resource:${resourceId}:url`);
+    const url = "localhost:8080"
     return url || null;
   }
 
   async addRoute(resourceId: string, internalUrl: string): Promise<void> {
-    await this.redisClient.set(`resource:${resourceId}:url`, internalUrl);
+    // await this.redisClient.set(`resource:${resourceId}:url`, internalUrl);
+    console.log(`add route ${resourceId} ${internalUrl}`)
   }
 
   async removeRoute(resourceId: string): Promise<void> {
-    await this.redisClient.del(`resource:${resourceId}:url`);
+    console.log(`remove route ${resourceId}`)
+    // await this.redisClient.del(`resource:${resourceId}:url`);
   }
 }
