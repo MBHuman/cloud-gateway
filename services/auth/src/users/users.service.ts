@@ -8,12 +8,12 @@ export type User = any;
 export class UsersService {
   private readonly users = [
     {
-      userId: 1,
+      userId: '50679805-21ac-4948-ad43-9ac27f0b1480',
       username: 'john',
       password: 'changeme',
     },
     {
-      userId: 2,
+      userId: 'e8f0cc1b-2113-4efc-bbe9-7ed6a9d45d23',
       username: 'maria',
       password: 'guess',
     },

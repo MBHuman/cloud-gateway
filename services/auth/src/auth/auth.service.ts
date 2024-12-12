@@ -5,10 +5,14 @@ import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class AuthService {
 
+  private userResources: Map<string, Set<string>>
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService
-  ) {}
+  ) {
+    this.userResources = new Map();
+  }
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOne(username);
@@ -45,19 +49,24 @@ export class AuthService {
   }
 
   async getUserResources(userId: string): Promise<string[]> {
-    // const resources = await this.redisClient.smembers(`user:${userId}:resources`);
-    const resources = ['resource']
+    // Получаем ресурсы пользователя
+    if(!this.userResources.has(userId)) {
+      return [];
+    }
+    const resources = Array.from(this.userResources.get(userId));
+    console.log(`getUserResources: ${JSON.stringify(this.userResources, null, 2)}`);
     return resources;
   }
-
+  
   async addUserResource(userId: string, resource: string): Promise<void> {
-    console.log(`add user resource ${userId} ${resource}`)
-    // await this.redisClient.sadd(`user:${userId}:resources`, resource);
+    if(!this.userResources.has(userId)) {
+      this.userResources.set(userId, new Set())
+    }
+    this.userResources.get(userId).add(resource);
   }
-
+  
   async removeUserResource(userId: string, resource: string): Promise<void> {
-    console.log(`removeUserResources ${userId} ${resource}`)
-    // await this.redisClient.srem(`user:${userId}:resources`, resource);
+    this.userResources.get(userId).delete(resource);
   }
 
   async handleCheckAccess(data: { userId: string; resourceId: string }): Promise<boolean> {

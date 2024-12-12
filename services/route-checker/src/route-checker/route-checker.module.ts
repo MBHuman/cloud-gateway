@@ -3,9 +3,11 @@ import { RouteCheckerController } from './route-checker.controller';
 import { RouteCheckerService } from './route-checker.service';
 import { HttpModule } from '@nestjs/axios';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     HttpModule,
     ClientsModule.register({
       clients: [

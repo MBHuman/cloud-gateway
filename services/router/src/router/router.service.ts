@@ -11,10 +11,12 @@ export class RouterService {
   }
 
   async checkAccess(token: string, resourceId: string): Promise<boolean> {
+
+    try {
+
       // Распарсить JWT и получить userId
-      // const decoded = this.parseToken(token);
-      // const userId = decoded.sub;
-      const userId = "adf"
+      const decoded = this.parseToken(token);
+      const userId = decoded.userId;
 
       console.log(`Checking access uid: ${userId} resourceId: ${resourceId} token: ${token}`)
       // Отправить запрос к Auth сервису для проверки доступа
@@ -27,9 +29,9 @@ export class RouterService {
       console.log(`is allowed ${isAllowed}`)
 
       return isAllowed;
-    // } catch (error) {
-    //   return false;
-    // }
+    } catch (error) {
+      return false;
+    }
   }
 
   parseToken(token: string): any {

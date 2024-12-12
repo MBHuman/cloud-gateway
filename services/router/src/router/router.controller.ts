@@ -12,7 +12,7 @@ export class RouterController {
     async handleRequest(@Req() req: Request, @Res() res: Response) {
         const authorization = req.headers['authorization'];
         const resourceId = req.params['0']; // предполагается формат /resource_id/...
-
+        console.log(`Authorization: ${authorization}`)
         if (!authorization) {
             return res.status(HttpStatus.UNAUTHORIZED).send('Unauthorized');
         }
