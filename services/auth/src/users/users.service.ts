@@ -1,8 +1,20 @@
 
 import { Injectable } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 
 // This should be a real class/interface representing a user entity
-export type User = any;
+// export type User = class;
+export class UserInfo {
+  @ApiProperty({name: "userId"})
+  userId: string;
+  @ApiProperty({name: "username"})
+  username: string;
+}
+
+export class User extends UserInfo {
+  password: string
+}
+
 
 @Injectable()
 export class UsersService {

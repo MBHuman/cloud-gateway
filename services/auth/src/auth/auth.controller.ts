@@ -3,23 +3,38 @@ import { MessagePattern } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/common/guards/local-auth.guard';
+import { ApiBasicAuth, ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthInfoDto } from './dto/authInfo.dto';
+import { Auth } from './entities/auth.entity';
+import { RefreshDto } from './dto/refresh.dto';
+import { UserInfo } from 'src/users/users.service';
+import { ResourcesDto } from './dto/resources.dto';
 
 @Controller('auth')
+@ApiTags('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
+  @ApiOperation({summary: "login with username and password"})
+  @ApiBody({type: AuthInfoDto})
+  @ApiResponse({status: 201, type: Auth})
   @Post('login')
   async login(@Request() req) {
     return this.authService.login(req.user);
   }
 
   @Post('refresh')
-  async refresh(@Body('refreshToken') refreshToken: string) {
-    return this.authService.refresh(refreshToken);
+  @ApiOperation({summary: "refresh token"})
+  @ApiResponse({status: 201, type: Auth})
+  async refresh(@Body() refreshDto: RefreshDto): Promise<Auth> {
+    return this.authService.refresh(refreshDto.refreshToken);
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({summary: "get profile info"})
+  @ApiResponse({type: UserInfo})
+  @ApiBearerAuth()
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
@@ -27,6 +42,9 @@ export class AuthController {
 
   // HTTP API для получения ресурсов пользователя
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({summary: "get user resources"})
+  @ApiResponse({type: UserInfo})
+  @ApiBearerAuth()
   @Get('users/:userId/resources')
   getUserResources(@Param('userId') userId: string) {
     return this.authService.getUserResources(userId);
@@ -34,22 +52,22 @@ export class AuthController {
 
   // HTTP API для добавления ресурса пользователю
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({summary: "add user resource"})
+  @ApiBearerAuth()
+  @ApiResponse({status: 201})
   @Post('users/:userId/resources')
-  addUserResource(
-    @Param('userId') userId: string,
-    @Body('resource') resource: string,
-  ) {
-    return this.authService.addUserResource(userId, resource);
+  addUserResource(@Body() resource: ResourcesDto, @Param("userId") userId: string) {
+    return this.authService.addUserResource(userId, resource.resource);
   }
 
   // HTTP API для удаления ресурса у пользователя
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({summary: "delete user resource"})
+  @ApiBearerAuth()
   @Post('users/:userId/resources/remove')
-  removeUserResource(
-    @Param('userId') userId: string,
-    @Body('resource') resource: string,
-  ) {
-    return this.authService.removeUserResource(userId, resource);
+  @ApiResponse({status: 201})
+  removeUserResource(@Body() resource: ResourcesDto, @Param("userId") userId: string) {
+    return this.authService.removeUserResource(userId, resource.resource);
   }
 
   // RabbitMQ: обработка запроса на получение ресурсов пользователя

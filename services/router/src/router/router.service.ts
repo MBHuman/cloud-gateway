@@ -5,20 +5,17 @@ import { firstValueFrom } from 'rxjs';
 @Injectable()
 export class RouterService {
 
+  private resourceMap: Map<string,  string>;
+
   constructor(
     @Inject('ROUTER_CHECKER_SERVICE') private readonly authClient: ClientProxy
   ) {
+    this.resourceMap = new Map();
   }
 
-  async checkAccess(token: string, resourceId: string): Promise<boolean> {
+  async checkAccess(userId, resourceId: string): Promise<boolean> {
 
     try {
-
-      // Распарсить JWT и получить userId
-      const decoded = this.parseToken(token);
-      const userId = decoded.userId;
-
-      console.log(`Checking access uid: ${userId} resourceId: ${resourceId} token: ${token}`)
       // Отправить запрос к Auth сервису для проверки доступа
       const isAllowed = await firstValueFrom(
         this.authClient.send(
@@ -26,6 +23,7 @@ export class RouterService {
           { userId, resourceId },
         )
       );
+      console.log(`userId: ${userId} resourceId: ${resourceId}`)
       console.log(`is allowed ${isAllowed}`)
 
       return isAllowed;
@@ -34,26 +32,18 @@ export class RouterService {
     }
   }
 
-  parseToken(token: string): any {
-    // Реализуйте разбор JWT и извлечение payload
-    // Например, используя библиотеку jsonwebtoken
-    const jwt = require('jsonwebtoken');
-    const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET || 'secretKey');
-    return decoded;
-  }
-
   async getInternalUrl(resourceId: string): Promise<string | null> {
-    const url = "localhost:8080"
-    return url || null;
+    if(!this.resourceMap.has(resourceId)) {
+      return null;
+    }
+    return this.resourceMap.get(resourceId);
   }
 
   async addRoute(resourceId: string, internalUrl: string): Promise<void> {
-    // await this.redisClient.set(`resource:${resourceId}:url`, internalUrl);
-    console.log(`add route ${resourceId} ${internalUrl}`)
+    this.resourceMap.set(resourceId, internalUrl);
   }
 
   async removeRoute(resourceId: string): Promise<void> {
-    console.log(`remove route ${resourceId}`)
-    // await this.redisClient.del(`resource:${resourceId}:url`);
+    this.resourceMap.delete(resourceId);
   }
 }

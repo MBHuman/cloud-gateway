@@ -4,6 +4,7 @@ import { RouterService } from './router.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { JwtStrategy } from 'src/common/strategy/jwt.strategy';
 
 @Module({
   imports: [
@@ -29,6 +30,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     }),
   ],
   controllers: [RouterController],
-  providers: [RouterService],
+  providers: [RouterService, JwtStrategy],
 })
 export class RouterModule {}

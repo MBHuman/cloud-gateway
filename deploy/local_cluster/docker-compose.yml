@@ -54,6 +54,22 @@ services:
     deploy:
       replicas: 1
 
+  resource-x:
+    build: ../../services/resource-x
+    environment:
+      - PORT=3000
+    networks:
+      - backend
+    deploy:
+      replicas: 1
+
+  nginx:
+    image: nginx:latest
+    deploy:
+      replicas: 1
+    networks:
+      - backend
+
 networks:
   backend:
     driver: bridge

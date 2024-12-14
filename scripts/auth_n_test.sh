@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 # Получение userId
 AUTH_S=http://localhost:3001
@@ -10,6 +10,7 @@ RT=$(echo $LP | jq '.refreshToken' | tr -d '"')
 PROFILE=$(curl -X GET $AUTH_S/auth/profile -H "Authorization: Bearer $AT")
 
 echo "Access Token: $AT"
+echo "Refresh Token: $RT"
 echo $PROFILE
 
 USER_ID=$(echo $PROFILE | jq '.userId' | tr -d '"')

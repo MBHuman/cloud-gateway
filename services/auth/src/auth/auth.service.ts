@@ -1,6 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
+import { UserInfo, UsersService } from 'src/users/users.service';
+import { Auth } from './entities/auth.entity';
+import { AuthInfoDto } from './dto/authInfo.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Injectable()
 export class AuthService {
@@ -23,9 +26,9 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
+  async login(user: UserInfo) {
     const payload = { username: user.username, sub: user.userId };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '60s' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '1d' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
     return {
       accessToken,
@@ -33,11 +36,11 @@ export class AuthService {
     };
   }
   
-  async refresh(refreshToken: string) {
+  async refresh(refreshToken: string): Promise<Auth> {
     try {
       const payload = this.jwtService.verify(refreshToken);
       const newPayload = { username: payload.username, sub: payload.sub };
-      const accessToken = this.jwtService.sign(newPayload, { expiresIn: '60s' });
+      const accessToken = this.jwtService.sign(newPayload, { expiresIn: '1d' });
       const newRefreshToken = this.jwtService.sign(newPayload, { expiresIn: '7d' });
       return {
         accessToken,
@@ -47,6 +50,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }
+
 
   async getUserResources(userId: string): Promise<string[]> {
     // Получаем ресурсы пользователя
