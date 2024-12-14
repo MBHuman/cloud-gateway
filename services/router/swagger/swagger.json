@@ -1,0 +1,239 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/routes": {
+      "post": {
+        "operationId": "RouterController_addRoute",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoutesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Router"
+        ]
+      }
+    },
+    "/routes/{resourceId}": {
+      "delete": {
+        "operationId": "RouterController_removeRoute",
+        "parameters": [
+          {
+            "name": "resourceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Router"
+        ]
+      }
+    },
+    "/*": {
+      "get": {
+        "operationId": "RouterController_handleRequest_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Router"
+        ]
+      },
+      "post": {
+        "operationId": "RouterController_handleRequest_post",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Router"
+        ]
+      },
+      "put": {
+        "operationId": "RouterController_handleRequest_put",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Router"
+        ]
+      },
+      "delete": {
+        "operationId": "RouterController_handleRequest_delete",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Router"
+        ]
+      },
+      "patch": {
+        "operationId": "RouterController_handleRequest_patch",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Router"
+        ]
+      },
+      "options": {
+        "operationId": "RouterController_handleRequest_options",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Router"
+        ]
+      },
+      "head": {
+        "operationId": "RouterController_handleRequest_head",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Router"
+        ]
+      },
+      "search": {
+        "operationId": "RouterController_handleRequest_search",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Router"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Router service",
+    "description": "",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "routes",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "RoutesDto": {
+        "type": "object",
+        "properties": {
+          "resourceId": {
+            "type": "string"
+          },
+          "internalUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "resourceId",
+          "internalUrl"
+        ]
+      }
+    }
+  }
+}
