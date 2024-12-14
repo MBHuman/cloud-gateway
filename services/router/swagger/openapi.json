@@ -25,6 +25,7 @@
             "bearer": []
           }
         ],
+        "summary": "add new resource",
         "tags": [
           "Router"
         ]
@@ -53,6 +54,7 @@
             "bearer": []
           }
         ],
+        "summary": "delete resource",
         "tags": [
           "Router"
         ]

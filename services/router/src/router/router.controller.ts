@@ -3,7 +3,7 @@ import { RouterService } from './router.service';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import axios, { AxiosRequestConfig } from 'axios';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { RoutesDto } from './dto/routes.dto';
 
 @Controller()
@@ -13,6 +13,7 @@ export class RouterController {
     // Добавить правило перенаправления
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
+    @ApiOperation({summary: "add new resource"})
     @Post('routes')
     async addRoute(@Body() routesDto: RoutesDto) {
         await this.routerService.addRoute(routesDto.resourceId, routesDto.internalUrl);
@@ -22,6 +23,7 @@ export class RouterController {
     // Удалить правило перенаправления
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
+    @ApiOperation({summary: "delete resource"})
     @Delete('routes/:resourceId')
     async removeRoute(@Param('resourceId') resourceId: string) {
         await this.routerService.removeRoute(resourceId);

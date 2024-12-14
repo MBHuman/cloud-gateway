@@ -45,7 +45,7 @@ graph LR
 4. `route-checker` - промежуточный сервис
 
 
-### Запуск
+### Тестирование, разработка
 
 Перед запуском локально устанвливаем модули в корневой папке
 
@@ -83,3 +83,28 @@ docker run -d \
 ```bash
 docker compose up -d
 ```
+
+### Документация
+
+Swagger запущен на сервисах `router` и `auth`.
+
+- router: `http://localhost:3002/swagger/api`
+- auth: `http://localhost:3001/swagger/api`
+
+openapi.json файлы сохранены в папках сервисов:
+
+- [auth](./services/auth/swagger/openapi.json)
+- [router](./services/router/swagger/openapi.json)
+
+### Тесты
+
+Тесты работоспособности:
+
+Скрипты на bash:
+
+- [add_resources.sh](./scripts/add_resources.sh) - проверка добавления и перенаправления трафика на ресурсы
+- [auth_n_test.sh](./scripts/auth_n_test.sh) - проверка на добавление и удаление ресурсов на пользователя, а также проверка авторизации по BasicAuth и JWT
+
+Тесты на jest:
+
+- [integrational.spec.js](./tests/integrational.spec.js) - аналогично тестам на bash, только можно проверить дополнительно с помощью debug.
