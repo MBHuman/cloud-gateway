@@ -5,18 +5,22 @@
   "private": true,
   "workspaces": [
     "services/*",
-    "ansible/*"
+    "ansible/*",
+    "tests/*"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
     "start": "npm run start --workspaces",
     "lint": "npm run lint --workspaces",
-    "test": "npm run test --workspaces",
+    "test": "jest ./tests",
     "format": "npm run format --workspaces",
     "deploy": "ansible-playbook ansible/playbooks/deploy.yml"
   },
   "devDependencies": {
+    "axios": "^1.7.9",
+    "axios-mock-adapter": "^2.1.0",
     "eslint": "^8.0.0",
+    "jest": "^29.7.0",
     "lerna": "^8.1.9",
     "prettier": "^2.8.0"
   },
