@@ -36,7 +36,7 @@ async function bootstrap() {
   }
 
   // Write the Swagger file
-  fs.writeFileSync(path.join(swaggerDir, 'swagger.json'), JSON.stringify(documentFactory(), null, 2));
+  fs.writeFileSync(path.join(swaggerDir, 'openapi.json'), JSON.stringify(documentFactory(), null, 2));
   console.log('Swagger JSON file has been generated!');
   await app.startAllMicroservices();
   await app.listen(process.env.PORT || 3002);
